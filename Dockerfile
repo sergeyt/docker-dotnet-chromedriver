@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:2.1-sdk-stretch
+FROM microsoft/dotnet:2.2-sdk-stretch
 
 # FROM buildpack-deps:stretch
 RUN set -ex; \
@@ -77,7 +77,7 @@ RUN set -ex \
     gpg --batch --keyserver hkp://pgp.mit.edu:80 --recv-keys "$key" ; \
   done
 
-ENV NODE_VERSION 10.13.0
+ENV NODE_VERSION 10.14.2
 
 RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && case "${dpkgArch##*-}" in \
@@ -97,7 +97,7 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && rm "node-v$NODE_VERSION-linux-$ARCH.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt \
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
-ENV YARN_VERSION 1.10.1
+ENV YARN_VERSION 1.12.3
 
 RUN set -ex \
   && for key in \
@@ -141,7 +141,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # download chromedriver
-ENV CHROMEDRIVER_VERSION 2.44
+ENV CHROMEDRIVER_VERSION 2.45
 
 RUN set -x \
     && apt-get update \
