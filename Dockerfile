@@ -140,6 +140,13 @@ RUN apt-get update && apt-get install -y \
     && apt-get purge --auto-remove -y curl \
     && rm -rf /var/lib/apt/lists/*
 
+# install jq, wget, dumb-init
+RUN apt-get update && \
+  apt-get install -yq jq wget && \
+  wget https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_amd64.deb && \
+  dpkg -i dumb-init_*.deb && rm -f dumb-init_*.deb && \
+  apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
+
 # download chromedriver
 ENV CHROMEDRIVER_VERSION 2.45
 
@@ -155,6 +162,15 @@ RUN set -x \
     && rm -rf /tmp/*.deb \
     && rm -rf /tmp/*.zip
 
+# install puppeteer
+ENV PUPPETEER_VERSION 1.11.0
+
+RUN yarn global add puppeteer@$PUPPETEER_VERSION && yarn cache clean
+
+ENV NODE_PATH="/usr/local/share/.config/yarn/global/node_modules:${NODE_PATH}"
+
 # add chrome user
 RUN groupadd -r chrome && useradd -r -g chrome -G audio,video chrome \
     && mkdir -p /home/chrome/Downloads && chown -R chrome:chrome /home/chrome 
+
+ENTRYPOINT ["dumb-init", "--"]

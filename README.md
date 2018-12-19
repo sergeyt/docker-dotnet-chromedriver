@@ -7,3 +7,5 @@ docker container with:
 * yarn 1.12.3
 * chromedriver 2.45
 * chrome stable version (v71 now)
+* puppeteer 1.11.0
+* jq JSON preprocessor
