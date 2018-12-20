@@ -1,9 +1,9 @@
 FROM microsoft/dotnet:2.2-sdk-stretch
 
 # FROM buildpack-deps:stretch
-RUN set -ex; \
-    apt-get update; \
-    apt-get install -y --no-install-recommends \
+RUN set -ex \
+    && apt-get update \
+    && apt-get install -yq --no-install-recommends \
         autoconf \
         automake \
         bzip2 \
@@ -42,7 +42,72 @@ RUN set -ex; \
         patch \
         xz-utils \
         zlib1g-dev \
-        \
+        # chrome stable deps
+        apt-transport-https \
+        ca-certificates \
+        curl \
+        gnupg \
+        hicolor-icon-theme \
+        libcanberra-gtk* \
+        libgl1-mesa-dri \
+        libgl1-mesa-glx \
+        libpango1.0-0 \
+        libpulse0 \
+        libv4l-0 \
+        fonts-symbola \
+        # puppeteer deps (based on https://github.com/alekzonder/docker-puppeteer)
+        gconf-service \
+        libasound2 \
+        libatk1.0-0 \
+        libc6 \
+        libcairo2 \
+        libcups2 \
+        libdbus-1-3 \
+        libexpat1 \
+        libfontconfig1 \
+        libgcc1 \
+        libgconf-2-4 \
+        libgdk-pixbuf2.0-0 \
+        libglib2.0-0 \
+        libgtk-3-0 \
+        libnspr4 \
+        libpango-1.0-0 \
+        libpangocairo-1.0-0 \
+        libstdc++6 \
+        libx11-6 \
+        libx11-xcb1 \
+        libxcb1 \
+        libxcomposite1 \
+        libxcursor1 \
+        libxdamage1 \
+        libxext6 \
+        libxfixes3 \
+        libxi6 \
+        libxrandr2 \
+        libxrender1 \
+        libxss1 \
+        libxtst6 \
+        fonts-ipafont-gothic \
+        fonts-wqy-zenhei \
+        fonts-thai-tlwg \
+        fonts-kacst \
+        ttf-freefont \
+        fonts-liberation \
+        libappindicator1 \
+        libnss3 \
+        lsb-release \
+        xdg-utils \
+        # other tools
+        wget \
+        unzip \
+        jq \
+    # install chrome, based on dockerfile from Jessie Frazelle <jess@linux.com>, thank you
+    && curl -sSL https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && echo "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list \
+    && apt-get update && apt-get install -yq --no-install-recommends google-chrome-stable \
+    # install dumb-init
+    && wget https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_amd64.deb \
+    && dpkg -i dumb-init_*.deb && rm -f dumb-init_*.deb \
 # https://lists.debian.org/debian-devel-announce/2016/09/msg00000.html
         $( \
 # if we use just "apt-cache show" here, it returns zero because "Can't select versions from package 'libmysqlclient-dev' as it is purely virtual", hence the pipe to grep
@@ -52,8 +117,8 @@ RUN set -ex; \
                 echo 'libmysqlclient-dev'; \
             fi \
         ) \
-    ; \
-    rm -rf /var/lib/apt/lists/*
+    # cleanup apt
+    && apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
 # FROM node:10.13.0
 RUN groupadd --gid 1000 node \
@@ -79,6 +144,7 @@ RUN set -ex \
 
 ENV NODE_VERSION 10.14.2
 
+# install node
 RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && case "${dpkgArch##*-}" in \
     amd64) ARCH='x64';; \
@@ -99,6 +165,7 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
 
 ENV YARN_VERSION 1.12.3
 
+# install yarn
 RUN set -ex \
   && for key in \
     6A010C5166006599AA17F08146C2130DFD2497F5 \
@@ -116,47 +183,10 @@ RUN set -ex \
   && ln -s /opt/yarn-v$YARN_VERSION/bin/yarnpkg /usr/local/bin/yarnpkg \
   && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
 
-# This code was based in Dockerfile from Jessie Frazelle <jess@linux.com> to Install Chrome. Thank you.
-# install chrome
-RUN apt-get update && apt-get install -y \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    gnupg \
-    hicolor-icon-theme \
-    libcanberra-gtk* \
-    libgl1-mesa-dri \
-    libgl1-mesa-glx \
-    libpango1.0-0 \
-    libpulse0 \
-    libv4l-0 \
-    fonts-symbola \
-    --no-install-recommends \
-    && curl -sSL https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && echo "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list \
-    && apt-get update && apt-get install -y \
-    google-chrome-stable \
-    --no-install-recommends \
-    && apt-get purge --auto-remove -y curl \
-    && rm -rf /var/lib/apt/lists/*
-
-# install jq, wget, dumb-init
-RUN apt-get update && \
-  apt-get install -yq jq wget && \
-  wget https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_amd64.deb && \
-  dpkg -i dumb-init_*.deb && rm -f dumb-init_*.deb && \
-  apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
-
-# download chromedriver
+# install chromedriver
 ENV CHROMEDRIVER_VERSION 2.45
 
 RUN set -x \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends \
-    ca-certificates \
-    curl \
-    unzip \
-    && rm -rf /var/lib/apt/lists/* \
     && curl -sSL "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip" -o /tmp/chromedriver.zip \
     && unzip -o /tmp/chromedriver -d /usr/bin/ \
     && rm -rf /tmp/*.deb \
@@ -170,7 +200,13 @@ RUN yarn global add puppeteer@$PUPPETEER_VERSION && yarn cache clean
 ENV NODE_PATH="/usr/local/share/.config/yarn/global/node_modules:${NODE_PATH}"
 
 # add chrome user
-RUN groupadd -r chrome && useradd -r -g chrome -G audio,video chrome \
-    && mkdir -p /home/chrome/Downloads && chown -R chrome:chrome /home/chrome 
+RUN groupadd -r chrome \
+    && useradd -r -g chrome -G audio,video chrome \
+    && mkdir -p /home/chrome/Downloads \
+    && chown -R chrome:chrome /home/chrome \
+    && chown -R chrome:chrome /usr/local/share/.config/yarn/global/node_modules
+
+# run everything after as non-privileged user
+USER chrome
 
 ENTRYPOINT ["dumb-init", "--"]
