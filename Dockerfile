@@ -205,7 +205,9 @@ RUN groupadd -r chrome \
     && mkdir -p /home/chrome/Downloads \
     && chown -R chrome:chrome /home/chrome \
     && chown -R chrome:chrome /usr/local/share/.config/yarn/global/node_modules \
-    && mkdir -p /opt/buildagent && chown -R chrome:chrome /opt/buildagent
+    && mkdir -p /opt/buildagent \
+    && chmod -R +w /opt \
+    && chown -R chrome:chrome /opt/buildagent
 
 # run everything after as non-privileged user
 USER chrome
