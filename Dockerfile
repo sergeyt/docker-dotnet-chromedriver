@@ -204,7 +204,8 @@ RUN groupadd -r chrome \
     && useradd -r -g chrome -G audio,video chrome \
     && mkdir -p /home/chrome/Downloads \
     && chown -R chrome:chrome /home/chrome \
-    && chown -R chrome:chrome /usr/local/share/.config/yarn/global/node_modules
+    && chown -R chrome:chrome /usr/local/share/.config/yarn/global/node_modules \
+    && mkdir -p /opt/buildagent && chown -R chrome:chrome /opt/buildagent
 
 # run everything after as non-privileged user
 USER chrome
