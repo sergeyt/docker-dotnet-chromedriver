@@ -142,7 +142,7 @@ RUN set -ex \
     gpg --batch --keyserver hkp://pgp.mit.edu:80 --recv-keys "$key" ; \
   done
 
-ENV NODE_VERSION 10.14.2
+ENV NODE_VERSION 10.15.0
 
 # install node
 RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
@@ -184,7 +184,7 @@ RUN set -ex \
   && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
 
 # install chromedriver
-ENV CHROMEDRIVER_VERSION 2.45
+ENV CHROMEDRIVER_VERSION 2.46
 
 RUN set -x \
     && curl -sSL "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip" -o /tmp/chromedriver.zip \
@@ -193,7 +193,7 @@ RUN set -x \
     && rm -rf /tmp/*.zip
 
 # install puppeteer
-ENV PUPPETEER_VERSION 1.11.0
+ENV PUPPETEER_VERSION 1.12.1
 
 RUN yarn global add puppeteer@$PUPPETEER_VERSION && yarn cache clean
 
