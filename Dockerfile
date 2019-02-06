@@ -193,7 +193,7 @@ RUN set -x \
     && rm -rf /tmp/*.zip
 
 # install puppeteer
-ENV PUPPETEER_VERSION 1.12.1
+ENV PUPPETEER_VERSION 1.12.2
 
 RUN yarn global add puppeteer@$PUPPETEER_VERSION && yarn cache clean
 
