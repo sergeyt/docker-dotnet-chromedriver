@@ -125,7 +125,7 @@ RUN groupadd --gid 1000 node \
   && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
 
 # install node
-ENV NODE_VERSION 10.15.2
+ENV NODE_VERSION 10.15.3
 
 RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && case "${dpkgArch##*-}" in \
@@ -165,7 +165,7 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
 # install yarn
-ENV YARN_VERSION 1.13.0
+ENV YARN_VERSION 1.15.2
 
 RUN set -ex \
   && for key in \
@@ -185,7 +185,7 @@ RUN set -ex \
   && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
 
 # install chromedriver
-ENV CHROMEDRIVER_VERSION 2.46
+ENV CHROMEDRIVER_VERSION 74.0.3729.6
 
 RUN set -x \
     && curl -sSL "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip" -o /tmp/chromedriver.zip \
