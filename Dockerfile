@@ -120,12 +120,13 @@ RUN set -ex \
   # cleanup apt
   && apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
+# https://github.com/nodejs/docker-node/blob/master/10/stretch/Dockerfile
 # FROM node:10.15.2
 RUN groupadd --gid 1000 node \
   && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
 
 # install node
-ENV NODE_VERSION 10.15.3
+ENV NODE_VERSION 10.16.0
 
 RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && case "${dpkgArch##*-}" in \
@@ -165,7 +166,7 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
 # install yarn
-ENV YARN_VERSION 1.16.0
+ENV YARN_VERSION 1.17.0
 
 RUN set -ex \
   && for key in \
@@ -194,7 +195,7 @@ RUN set -x \
   && rm -rf /tmp/*.zip
 
 # install puppeteer
-ENV PUPPETEER_VERSION 1.16.0
+ENV PUPPETEER_VERSION 1.17.0
 
 RUN yarn global add puppeteer@$PUPPETEER_VERSION && yarn cache clean
 
