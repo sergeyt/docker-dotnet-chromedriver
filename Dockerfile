@@ -190,12 +190,13 @@ ENV CHROMEDRIVER_VERSION 75.0.3770.90
 
 RUN set -x \
   && curl -sSL "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip" -o /tmp/chromedriver.zip \
-  && unzip -o /tmp/chromedriver -d /usr/bin/ \
+  && unzip -o /tmp/chromedriver -d /usr/local/bin/ \
+  && chmod +x /usr/local/bin/chromedriver \
   && rm -rf /tmp/*.deb \
   && rm -rf /tmp/*.zip
 
 # install puppeteer
-ENV PUPPETEER_VERSION 1.18.0
+ENV PUPPETEER_VERSION 1.18.1
 
 RUN yarn global add puppeteer@$PUPPETEER_VERSION && yarn cache clean
 
