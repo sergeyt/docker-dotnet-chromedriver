@@ -186,7 +186,7 @@ RUN set -ex \
   && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
 
 # install chromedriver
-ENV CHROMEDRIVER_VERSION 75.0.3770.90
+ENV CHROMEDRIVER_VERSION 2.46
 
 RUN set -x \
   && curl -sSL "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip" -o /tmp/chromedriver.zip \
