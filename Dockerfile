@@ -121,12 +121,12 @@ RUN set -ex \
   && apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
 # https://github.com/nodejs/docker-node/blob/master/10/stretch/Dockerfile
-# FROM node:10.15.2
+# FROM node:10.16.3
 RUN groupadd --gid 1000 node \
   && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
 
 # install node
-ENV NODE_VERSION 10.16.0
+ENV NODE_VERSION 10.16.3
 
 RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && case "${dpkgArch##*-}" in \
@@ -166,7 +166,7 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
 # install yarn
-ENV YARN_VERSION 1.17.0
+ENV YARN_VERSION 1.17.3
 
 RUN set -ex \
   && for key in \
@@ -186,7 +186,7 @@ RUN set -ex \
   && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
 
 # install chromedriver
-ENV CHROMEDRIVER_VERSION 2.46
+ENV CHROMEDRIVER_VERSION 76.0.3809.126
 
 RUN set -x \
   && curl -sSL "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip" -o /tmp/chromedriver.zip \
@@ -196,7 +196,7 @@ RUN set -x \
   && rm -rf /tmp/*.zip
 
 # install puppeteer
-ENV PUPPETEER_VERSION 1.18.1
+ENV PUPPETEER_VERSION 1.19.0
 
 RUN yarn global add puppeteer@$PUPPETEER_VERSION && yarn cache clean
 
