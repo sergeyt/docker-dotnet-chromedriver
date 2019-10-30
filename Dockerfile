@@ -1,6 +1,6 @@
-FROM microsoft/dotnet:2.2-sdk-stretch
+FROM mcr.microsoft.com/dotnet/core/sdk:3.0-buster
 
-# FROM buildpack-deps:stretch
+# FROM https://github.com/docker-library/buildpack-deps/blob/master/buster/Dockerfile
 RUN set -ex \
   && apt-get update \
   && apt-get install -yq --no-install-recommends \
@@ -19,13 +19,14 @@ RUN set -ex \
   libevent-dev \
   libffi-dev \
   libgdbm-dev \
-  libgeoip-dev \
   libglib2.0-dev \
+  libgmp-dev \
   libjpeg-dev \
   libkrb5-dev \
   liblzma-dev \
   libmagickcore-dev \
   libmagickwand-dev \
+  libmaxminddb-dev \
   libncurses5-dev \
   libncursesw5-dev \
   libpng-dev \
@@ -40,66 +41,11 @@ RUN set -ex \
   libyaml-dev \
   make \
   patch \
+  unzip \
   xz-utils \
   zlib1g-dev \
-  # chrome stable deps
-  apt-transport-https \
-  ca-certificates \
-  curl \
-  gnupg \
-  hicolor-icon-theme \
-  libcanberra-gtk* \
-  libgl1-mesa-dri \
-  libgl1-mesa-glx \
-  libpango1.0-0 \
-  libpulse0 \
-  libv4l-0 \
-  fonts-symbola \
-  # puppeteer deps (based on https://github.com/alekzonder/docker-puppeteer)
-  gconf-service \
-  libasound2 \
-  libatk1.0-0 \
-  libc6 \
-  libcairo2 \
-  libcups2 \
-  libdbus-1-3 \
-  libexpat1 \
-  libfontconfig1 \
-  libgcc1 \
-  libgconf-2-4 \
-  libgdk-pixbuf2.0-0 \
-  libglib2.0-0 \
-  libgtk-3-0 \
-  libnspr4 \
-  libpango-1.0-0 \
-  libpangocairo-1.0-0 \
-  libstdc++6 \
-  libx11-6 \
-  libx11-xcb1 \
-  libxcb1 \
-  libxcomposite1 \
-  libxcursor1 \
-  libxdamage1 \
-  libxext6 \
-  libxfixes3 \
-  libxi6 \
-  libxrandr2 \
-  libxrender1 \
-  libxss1 \
-  libxtst6 \
-  fonts-ipafont-gothic \
-  fonts-wqy-zenhei \
-  fonts-thai-tlwg \
-  fonts-kacst \
-  ttf-freefont \
-  fonts-liberation \
-  libappindicator1 \
-  libnss3 \
-  lsb-release \
-  xdg-utils \
   # other tools
   wget \
-  unzip \
   jq \
   # install chrome, based on dockerfile from Jessie Frazelle <jess@linux.com>, thank you
   && curl -sSL https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
@@ -120,13 +66,13 @@ RUN set -ex \
   # cleanup apt
   && apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
-# https://github.com/nodejs/docker-node/blob/master/10/stretch/Dockerfile
+# https://github.com/nodejs/docker-node/blob/master/10/buster/Dockerfile
 # FROM node:10.16.3
 RUN groupadd --gid 1000 node \
   && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
 
 # install node
-ENV NODE_VERSION 10.16.3
+ENV NODE_VERSION 10.17.0
 
 RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && case "${dpkgArch##*-}" in \
@@ -166,7 +112,7 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
 # install yarn
-ENV YARN_VERSION 1.17.3
+ENV YARN_VERSION 1.19.1
 
 RUN set -ex \
   && for key in \
@@ -186,7 +132,7 @@ RUN set -ex \
   && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
 
 # install chromedriver
-ENV CHROMEDRIVER_VERSION 75.0.3770.140
+ENV CHROMEDRIVER_VERSION 78.0.3904.70
 
 RUN set -x \
   && curl -sSL "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip" -o /tmp/chromedriver.zip \
@@ -196,7 +142,7 @@ RUN set -x \
   && rm -rf /tmp/*.zip
 
 # install puppeteer
-ENV PUPPETEER_VERSION 1.19.0
+ENV PUPPETEER_VERSION 2.0.0
 
 RUN yarn global add puppeteer@$PUPPETEER_VERSION && yarn cache clean
 
