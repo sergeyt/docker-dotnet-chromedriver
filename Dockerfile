@@ -47,6 +47,7 @@ RUN set -ex \
   # other tools
   wget \
   jq \
+  parallel \
   # install chrome, based on dockerfile from Jessie Frazelle <jess@linux.com>, thank you
   && curl -sSL https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
   && echo "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list \
