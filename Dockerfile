@@ -1,5 +1,10 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster
 
+ENV NODE_VERSION 12.15.0
+ENV YARN_VERSION 1.21.1
+ENV PUPPETEER_VERSION 2.1.1
+ENV CHROMEDRIVER_VERSION 80.0.3987.16
+
 # FROM https://github.com/docker-library/buildpack-deps/blob/master/buster/Dockerfile
 RUN set -ex \
   && apt-get update \
@@ -72,9 +77,7 @@ RUN set -ex \
 RUN groupadd --gid 1000 node \
   && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
 
-# install node
-ENV NODE_VERSION 12.13.1
-
+# install nodejs
 RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && case "${dpkgArch##*-}" in \
   amd64) ARCH='x64';; \
@@ -113,8 +116,6 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
 # install yarn
-ENV YARN_VERSION 1.21.1
-
 RUN set -ex \
   && for key in \
   6A010C5166006599AA17F08146C2130DFD2497F5 \
@@ -133,8 +134,6 @@ RUN set -ex \
   && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
 
 # install chromedriver
-ENV CHROMEDRIVER_VERSION 79.0.3945.36
-
 RUN set -x \
   && curl -sSL "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip" -o /tmp/chromedriver.zip \
   && unzip -o /tmp/chromedriver -d /usr/local/bin/ \
@@ -143,8 +142,6 @@ RUN set -x \
   && rm -rf /tmp/*.zip
 
 # install puppeteer
-ENV PUPPETEER_VERSION 2.0.0
-
 RUN yarn global add puppeteer@$PUPPETEER_VERSION && yarn cache clean
 
 ENV NODE_PATH="/usr/local/share/.config/yarn/global/node_modules:${NODE_PATH}"
