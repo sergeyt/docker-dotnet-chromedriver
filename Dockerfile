@@ -1,9 +1,9 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster
 
-ENV NODE_VERSION 12.15.0
-ENV YARN_VERSION 1.21.1
+ENV NODE_VERSION 12.16.1
+ENV YARN_VERSION 1.22.0
 ENV PUPPETEER_VERSION 2.1.1
-ENV CHROMEDRIVER_VERSION 80.0.3987.16
+ENV CHROMEDRIVER_VERSION 80.0.3987.106
 
 # FROM https://github.com/docker-library/buildpack-deps/blob/master/buster/Dockerfile
 RUN set -ex \
@@ -73,7 +73,7 @@ RUN set -ex \
   && apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
 # https://github.com/nodejs/docker-node/blob/master/12/buster/Dockerfile
-# FROM node:12.13.1
+# FROM node:12.16.1
 RUN groupadd --gid 1000 node \
   && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
 
@@ -113,7 +113,10 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && grep " node-v$NODE_VERSION-linux-$ARCH.tar.xz\$" SHASUMS256.txt | sha256sum -c - \
   && tar -xJf "node-v$NODE_VERSION-linux-$ARCH.tar.xz" -C /usr/local --strip-components=1 --no-same-owner \
   && rm "node-v$NODE_VERSION-linux-$ARCH.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt \
-  && ln -s /usr/local/bin/node /usr/local/bin/nodejs
+  && ln -s /usr/local/bin/node /usr/local/bin/nodejs \
+  # smoke tests
+  && node --version \
+  && npm --version
 
 # install yarn
 RUN set -ex \
@@ -131,7 +134,9 @@ RUN set -ex \
   && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/ \
   && ln -s /opt/yarn-v$YARN_VERSION/bin/yarn /usr/local/bin/yarn \
   && ln -s /opt/yarn-v$YARN_VERSION/bin/yarnpkg /usr/local/bin/yarnpkg \
-  && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
+  && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
+  # smoke test
+  && yarn --version
 
 # install chromedriver
 RUN set -x \
