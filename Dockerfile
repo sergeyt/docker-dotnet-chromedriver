@@ -1,14 +1,16 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster
 
-ENV NODE_VERSION 12.16.1
-ENV YARN_VERSION 1.22.0
-ENV PUPPETEER_VERSION 2.1.1
-ENV CHROMEDRIVER_VERSION 80.0.3987.106
+ENV NODE_VERSION 12.16.2
+ENV YARN_VERSION 1.22.4
+ENV PUPPETEER_VERSION 3.0.0
+ENV CHROMEDRIVER_VERSION 81.0.4044.69
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
-# FROM https://github.com/docker-library/buildpack-deps/blob/master/buster/Dockerfile
+# install buildpack, tools, stable chrome with deps
 RUN set -ex \
   && apt-get update \
   && apt-get install -yq --no-install-recommends \
+  # buildpack deps (https://github.com/docker-library/buildpack-deps/blob/master/buster/Dockerfile)
   autoconf \
   automake \
   bzip2 \
@@ -49,10 +51,50 @@ RUN set -ex \
   unzip \
   xz-utils \
   zlib1g-dev \
-  # other tools
-  wget \
+  # chrome deps (https://github.com/puppeteer/puppeteer/blob/master/docs/troubleshooting.md)
+  ca-certificates \
+  fonts-liberation \
+  gconf-service \
+  libappindicator1 \
+  libasound2 \
+  libatk-bridge2.0-0 \
+  libatk1.0-0 \
+  libc6 \
+  libcairo2 \
+  libcups2 \
+  libdbus-1-3 \
+  libexpat1 \
+  libfontconfig1 \
+  libgcc1 \
+  libgconf-2-4 \
+  libgdk-pixbuf2.0-0 \
+  libglib2.0-0 \
+  libgtk-3-0 \
+  libnspr4 \
+  libnss3 \
+  libpango-1.0-0 \
+  libpangocairo-1.0-0 \
+  libstdc++6 \
+  libx11-6 \
+  libx11-xcb1 \
+  libxcb1 \
+  libxcomposite1 \
+  libxcursor1 \
+  libxdamage1 \
+  libxext6 \
+  libxfixes3 \
+  libxi6 \
+  libxrandr2 \
+  libxrender1 \
+  libxss1 \
+  libxtst6 \
+  lsb-release \
+  xdg-utils \
+  # extra tools
+  curl \
   jq \
   parallel \
+  wget \
   # install chrome, based on dockerfile from Jessie Frazelle <jess@linux.com>, thank you
   && curl -sSL https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
   && echo "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list \
@@ -127,8 +169,8 @@ RUN set -ex \
   gpg --batch --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys "$key" || \
   gpg --batch --keyserver hkp://pgp.mit.edu:80 --recv-keys "$key" ; \
   done \
-  && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
-  && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
+  && curl -fsSLO --compressed "https://github.com/yarnpkg/yarn/releases/download/v$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
+  && curl -fsSLO --compressed "https://github.com/yarnpkg/yarn/releases/download/v$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
   && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
   && mkdir -p /opt \
   && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/ \
@@ -160,6 +202,9 @@ RUN groupadd -r chrome \
   && mkdir -p /opt/buildagent \
   && chmod -R +w /opt \
   && chown -R chrome:chrome /opt/buildagent
+
+# print missing chrome deps if any
+RUN echo 'missing chrome deps' && (ldd /opt/google/chrome/chrome | grep not) || true
 
 # run everything after as non-privileged user
 USER chrome
