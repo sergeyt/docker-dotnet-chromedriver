@@ -1,9 +1,9 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster
 
-ENV NODE_VERSION 12.16.2
+ENV NODE_VERSION 12.18.2
 ENV YARN_VERSION 1.22.4
-ENV PUPPETEER_VERSION 3.0.0
-ENV CHROMEDRIVER_VERSION 81.0.4044.69
+ENV PUPPETEER_VERSION 5.0.0
+ENV CHROMEDRIVER_VERSION 83.0.4103.39
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
 # install buildpack, tools, stable chrome with deps
@@ -169,8 +169,8 @@ RUN set -ex \
   gpg --batch --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys "$key" || \
   gpg --batch --keyserver hkp://pgp.mit.edu:80 --recv-keys "$key" ; \
   done \
-  && curl -fsSLO --compressed "https://github.com/yarnpkg/yarn/releases/download/v$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
-  && curl -fsSLO --compressed "https://github.com/yarnpkg/yarn/releases/download/v$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
+  && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
+  && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
   && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
   && mkdir -p /opt \
   && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/ \
